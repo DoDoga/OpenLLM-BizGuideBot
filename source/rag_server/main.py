@@ -10,7 +10,7 @@ def main():
         document_dir = "/mount/src/rag-service/document"
             
     app = ChatApp({
-        "llm_url": "https://incredibly-mature-vulture.ngrok-free.app/llm/",
+        "llm_url": "https://complete-mastiff-special.ngrok-free.app/llm/",
         "document_dir": document_dir,
         "show_prompt" : True,
     })
