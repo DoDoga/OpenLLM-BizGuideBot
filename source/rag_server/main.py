@@ -4,12 +4,11 @@ from app.chat_app import ChatApp
 def main():
     current_dir = os.getcwd()
 
-    # project_name = "openllm-bizguidebot"
-    # if current_dir.startswith("/home"):
-    #     document_dir = os.path.abspath(os.path.join(current_dir, "../../document"))
-    # else:
-    #     document_dir = f"/mount/src/{project_name}/rag_server/document"
-    document_dir = os.path.abspath(os.path.join(current_dir, "../../document"))
+    project_name = "openllm-bizguidebot"
+    if current_dir.startswith("/home"):
+        document_dir = os.path.abspath(os.path.join(current_dir, "../../document"))
+    else:
+        document_dir = f"/mount/src/{project_name}/document"
             
     app = ChatApp({
         "llm_url": "https://complete-mastiff-special.ngrok-free.app/llm/",
