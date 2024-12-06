@@ -2,12 +2,13 @@ import os
 from app.chat_app import ChatApp
 
 def main():
-
     current_dir = os.getcwd()
+    project_name = "openllm-bizguidebot"
+
     if current_dir.startswith("/home"):
         document_dir = os.path.abspath(os.path.join(current_dir, "../document"))
     else:
-        document_dir = "/mount/src/rag-service/document"
+        document_dir = "/mount/src/{project_name}/rag_server/document"
             
     app = ChatApp({
         "llm_url": "https://complete-mastiff-special.ngrok-free.app/llm/",
