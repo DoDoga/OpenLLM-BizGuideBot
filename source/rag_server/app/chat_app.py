@@ -1,7 +1,4 @@
 # app/chat_app.py
-
-import logging
-
 import streamlit as st
 from processor.file_processor import FileProcessor
 from processor.text_processor import TextProcessor
@@ -24,10 +21,6 @@ from langchain.prompts.chat import SystemMessagePromptTemplate, HumanMessageProm
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.history_aware_retriever import create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
-
-
-# 로그 레벨 설정
-# logging.basicConfig(level=logging.DEBUG)
 
 RAG_SYSTEM_PROMPT_TEMPLATE = """
 질문-답변 업무를 돕는 보조원입니다. 아래 요구에 따라 적합한 응답을 하세요
@@ -60,6 +53,8 @@ def get_session_history(session_ids: str) -> BaseChatMessageHistory:
 
 
 class ChatApp:
+    global retriever
+    
     def __init__(self, config):
         self.file_processor = FileProcessor()
         self.text_processor = TextProcessor()
@@ -70,6 +65,23 @@ class ChatApp:
         self.llm = RemoteRunnable(config["llm_url"])
         self.setup_session_state()
         self.setup_page()
+        
+        self.file_processor.add_directory(self.DOCUMENT_DIR)
+        files_text = self.file_processor.get_text()
+        
+        print("files_text : ", files_text)
+        
+        if len(files_text) > 0:
+            text_chunks = self.text_processor.get_text_chunks(files_text)            
+            vectorestore = self.vector_store_manager.get_vectorstore(text_chunks)            
+            retriever = vectorestore.as_retriever(search_type="mmr", verbose=True)
+
+            
+            st.session_state["retriever"] = retriever
+            st.session_state["ragActive"] = True
+        else:
+            st.session_state["ragActive"] = False
+        
 
     def setup_session_state(self):
         if "messages" not in st.session_state:
@@ -102,23 +114,8 @@ class ChatApp:
     # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
     def run(self):
         # run() 재실행되므로 이전 메모리 저장 삭제 
-        self.file_processor.clear()
-        self.file_processor.add_directory(self.DOCUMENT_DIR)
-        files_text = self.file_processor.get_text()
-        
-        print("files_text : ", files_text)
-        
-        if len(files_text) > 0:
-            text_chunks = self.text_processor.get_text_chunks(files_text)            
-            vectorestore = self.vector_store_manager.get_vectorstore(text_chunks)            
-            retriever = vectorestore.as_retriever(search_type="mmr", verbose=True)
+        # self.file_processor.clear()
 
-            
-            st.session_state["retriever"] = retriever
-            st.session_state["ragActive"] = True
-        else:
-            st.session_state["ragActive"] = False
-        
 
         self.print_history()
 
