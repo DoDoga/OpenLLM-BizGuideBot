@@ -1,8 +1,6 @@
 import os
-import streamlit as st
 from app.chat_app import ChatApp
 
-@st.cache
 def load_app():
     current_dir = os.getcwd()
 
@@ -20,7 +18,6 @@ def load_app():
 
 def main():
     app = load_app()
-
     app.run()
 
 if __name__ == "__main__":
