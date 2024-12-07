@@ -60,16 +60,11 @@ def get_session_history(session_ids: str) -> BaseChatMessageHistory:
 
 
 class ChatApp:
-
     def __init__(self, config):
-
-
         self.file_processor = FileProcessor()
         self.text_processor = TextProcessor()
         self.vector_store_manager = VectorStoreManager()
 
-        #self.llm_url = "https://incredibly-mature-vulture.ngrok-free.app/llm/"
-        
         self.DOCUMENT_DIR = config['document_dir']
         
         self.llm = RemoteRunnable(config['llm_url'])
@@ -77,7 +72,6 @@ class ChatApp:
         self.setup_page()
 
     def setup_session_state(self):
-
         if "messages" not in st.session_state:
             st.session_state["messages"] = []
 
@@ -86,11 +80,11 @@ class ChatApp:
         
         if "retriever" not in st.session_state:
             st.session_state["retriever"] = None
+
+        if "assistant" not in st.session_state:
+            st.session_state["assistant"] = [{"role": "assistant","content": "안녕하세요! 저는 엔조이소프트의 AI 안내 챗봇 엔조이봇입니다. 무엇을 도와드릴까요?"}]                              
+
         
-        if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "assistant",
-                                             "content": "안녕하세요! 저는 엔조이소프트의 AI 안내 챗봇 엔조이봇입니다. 무엇을 도와드릴까요?"}]                              
-    
     def setup_page(self):
 
         st.set_page_config(
@@ -116,7 +110,6 @@ class ChatApp:
         # run() 재실행되므로 이전 메모리 저장 삭제 
         self.file_processor.clear()
         self.file_processor.add_directory(self.DOCUMENT_DIR)
-        #self.file_processor.add_streamlit_upload_files(uploaded_files)
         files_text = self.file_processor.get_text()
         
         print("files_text : ", files_text)
@@ -143,7 +136,6 @@ class ChatApp:
                 chat_container = st.empty()
 
                 if st.session_state['ragActive']:                   
-                    
                     # Contextulize question
                     contextualize_q_prompt = ChatPromptTemplate.from_messages(
                         [
