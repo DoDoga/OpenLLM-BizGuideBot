@@ -92,8 +92,17 @@ class ChatApp:
     def format_docs(self, docs):
         return "\n\n".join(doc.page_content for doc in docs)
     
-    @st.cache
-    def rag_load_and_clear(self):
+    def display_answer(self, answer_stream, chat_container):
+        chunks = []
+        for chunk in answer_stream:
+            if "answer" in chunk:
+                chunks.append(chunk["answer"])
+                chat_container.markdown("".join(chunks))
+                
+        self.add_history("assistant", "".join(chunks))
+    
+    # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
+    def run(self):
         # run() 재실행되므로 이전 메모리 저장 삭제 
         self.file_processor.clear()
         self.file_processor.add_directory(self.DOCUMENT_DIR)
@@ -105,17 +114,13 @@ class ChatApp:
             text_chunks = self.text_processor.get_text_chunks(files_text)            
             vectorestore = self.vector_store_manager.get_vectorstore(text_chunks)            
             retriever = vectorestore.as_retriever(search_type="mmr", verbose=True)
-
             
             st.session_state["retriever"] = retriever
             st.session_state["ragActive"] = True
         else:
             st.session_state["ragActive"] = False
         
-    
-    # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
-    def run(self):
-        self.rag_load_and_clear()
+
         self.print_history()
 
         if user_input := st.chat_input("메시지를 입력해 주세요."):
@@ -173,11 +178,3 @@ class ChatApp:
                 
                 self.display_answer(answer, chat_container)
 
-    def display_answer(self, answer_stream, chat_container):
-        chunks = []
-        for chunk in answer_stream:
-            if "answer" in chunk:
-                chunks.append(chunk["answer"])
-                chat_container.markdown("".join(chunks))
-                
-        self.add_history("assistant", "".join(chunks))
