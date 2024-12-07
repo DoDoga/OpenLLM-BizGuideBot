@@ -53,8 +53,6 @@ def get_session_history(session_ids: str) -> BaseChatMessageHistory:
 
 
 class ChatApp:
-    global retriever
-    
     def __init__(self, config):
         self.file_processor = FileProcessor()
         self.text_processor = TextProcessor()
@@ -65,23 +63,7 @@ class ChatApp:
         self.llm = RemoteRunnable(config["llm_url"])
         self.setup_session_state()
         self.setup_page()
-        
-        self.file_processor.add_directory(self.DOCUMENT_DIR)
-        files_text = self.file_processor.get_text()
-        
-        print("files_text : ", files_text)
-        
-        if len(files_text) > 0:
-            text_chunks = self.text_processor.get_text_chunks(files_text)            
-            vectorestore = self.vector_store_manager.get_vectorstore(text_chunks)            
-            retriever = vectorestore.as_retriever(search_type="mmr", verbose=True)
-
-            
-            st.session_state["retriever"] = retriever
-            st.session_state["ragActive"] = True
-        else:
-            st.session_state["ragActive"] = False
-        
+        print("loadTest Init")
 
     def setup_session_state(self):
         if "messages" not in st.session_state:
@@ -113,9 +95,25 @@ class ChatApp:
     
     # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
     def run(self):
+        print("loadTest run")
         # run() 재실행되므로 이전 메모리 저장 삭제 
-        # self.file_processor.clear()
+        self.file_processor.clear()
+        self.file_processor.add_directory(self.DOCUMENT_DIR)
+        files_text = self.file_processor.get_text()
+        
+        print("files_text : ", files_text)
+        
+        if len(files_text) > 0:
+            text_chunks = self.text_processor.get_text_chunks(files_text)            
+            vectorestore = self.vector_store_manager.get_vectorstore(text_chunks)            
+            retriever = vectorestore.as_retriever(search_type="mmr", verbose=True)
 
+            
+            st.session_state["retriever"] = retriever
+            st.session_state["ragActive"] = True
+        else:
+            st.session_state["ragActive"] = False
+        
 
         self.print_history()
 
