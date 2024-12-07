@@ -90,7 +90,6 @@ class ChatApp:
             page_title="엔조이소프트 안내 챗봇",
             #page_icon=":books:"
         )
-
         st.title("엔조이소프트 안내 챗봇")
 
     def print_history(self):
@@ -103,11 +102,10 @@ class ChatApp:
     def format_docs(self, docs):
         return "\n\n".join(doc.page_content for doc in docs)
     
-    @st.cache
+    # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
     def run(self):
-
         # run() 재실행되므로 이전 메모리 저장 삭제 
-        # self.file_processor.clear()
+        self.file_processor.clear()
         self.file_processor.add_directory(self.DOCUMENT_DIR)
         files_text = self.file_processor.get_text()
         
