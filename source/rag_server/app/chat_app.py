@@ -92,7 +92,7 @@ class ChatApp:
     def format_docs(self, docs):
         return "\n\n".join(doc.page_content for doc in docs)
     
-    @st.cache_resource
+    @st.cache
     def rag_load_and_clear(self):
         # run() 재실행되므로 이전 메모리 저장 삭제 
         self.file_processor.clear()
