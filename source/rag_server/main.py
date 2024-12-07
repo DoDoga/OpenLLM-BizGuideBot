@@ -1,6 +1,8 @@
 import os
+import streamlit as st
 from app.chat_app import ChatApp
 
+@st.cache
 def main():
     current_dir = os.getcwd()
 
