@@ -10,6 +10,7 @@ def load_app():
     else:
         document_dir = f"/mount/src/{project_name}/document"
     
+    print("여기도 다시 init?")
     return ChatApp({
         "llm_url": "https://complete-mastiff-special.ngrok-free.app/llm/",
         "document_dir": document_dir,

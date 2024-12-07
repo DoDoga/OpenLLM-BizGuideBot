@@ -63,7 +63,6 @@ class ChatApp:
         self.llm = RemoteRunnable(config["llm_url"])
         self.setup_session_state()
         self.setup_page()
-        print("loadTest Init")
 
     def setup_session_state(self):
         if "messages" not in st.session_state:
@@ -95,7 +94,6 @@ class ChatApp:
     
     # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
     def run(self):
-        print("loadTest run")
         # run() 재실행되므로 이전 메모리 저장 삭제 
         self.file_processor.clear()
         self.file_processor.add_directory(self.DOCUMENT_DIR)
