@@ -33,7 +33,7 @@ RAG_SYSTEM_PROMPT_TEMPLATE = """
 질문-답변 업무를 돕는 보조원입니다. 아래 요구에 따라 적합한 응답을 하세요
 
 - Question이 Context와 관련이 없는 경우 "죄송합니다. 해당 질문에 대한 답변을 제공할 수 없습니다." 라고 응답하세요
-- Question이 '엔조이소프트'와 관련이 없는 경우 "죄송합니다. 해당 질문에 대한 답변을 제공할 수 없습니다." 라고 응답하세요
+- Question이 "엔조이소프트"와 관련이 없는 경우 "죄송합니다. 해당 질문에 대한 답변을 제공할 수 없습니다." 라고 응답하세요
 - 모든 답변은 공손하고 전문적인 어조로 응답하세요.
 - Question이 Context와 관련이 없는 경우 Question 내용에 대한 답변만 하세요.
 
@@ -54,9 +54,9 @@ Answer:"""
 
 
 def get_session_history(session_ids: str) -> BaseChatMessageHistory:
-    if session_ids not in st.session_state['history']:
-        st.session_state['history'][session_ids] = ChatMessageHistory()
-    return st.session_state['history'][session_ids]
+    if session_ids not in st.session_state["history"]:
+        st.session_state["history"][session_ids] = ChatMessageHistory()
+    return st.session_state["history"][session_ids]
 
 
 class ChatApp:
@@ -65,15 +65,15 @@ class ChatApp:
         self.text_processor = TextProcessor()
         self.vector_store_manager = VectorStoreManager()
 
-        self.DOCUMENT_DIR = config['document_dir']
+        self.DOCUMENT_DIR = config["document_dir"]
         
-        self.llm = RemoteRunnable(config['llm_url'])
+        self.llm = RemoteRunnable(config["llm_url"])
         self.setup_session_state()
         self.setup_page()
 
     def setup_session_state(self):
         if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "assistant","content": "안녕하세요! 저는 엔조이소프트의 AI 안내 챗봇입니다. 무엇을 도와드릴까요?"}]  
+            st.session_state["messages"] = []  
 
         if "history" not in st.session_state:
             st.session_state["history"] = {}
@@ -111,13 +111,13 @@ class ChatApp:
         if len(files_text) > 0:
             text_chunks = self.text_processor.get_text_chunks(files_text)            
             vectorestore = self.vector_store_manager.get_vectorstore(text_chunks)            
-            retriever = vectorestore.as_retriever(search_type='mmr', verbose=True)
+            retriever = vectorestore.as_retriever(search_type="mmr", verbose=True)
 
             
-            st.session_state['retriever'] = retriever
-            st.session_state['ragActive'] = True
+            st.session_state["retriever"] = retriever
+            st.session_state["ragActive"] = True
         else:
-            st.session_state['ragActive'] = False
+            st.session_state["ragActive"] = False
         
 
         self.print_history()
@@ -129,7 +129,7 @@ class ChatApp:
                 
                 chat_container = st.empty()
 
-                if st.session_state['ragActive']:                   
+                if st.session_state["ragActive"]:                   
                     # Contextulize question
                     contextualize_q_prompt = ChatPromptTemplate.from_messages(
                         [
@@ -180,8 +180,8 @@ class ChatApp:
     def display_answer(self, answer_stream, chat_container):
         chunks = []
         for chunk in answer_stream:
-            if 'answer' in chunk:
-                chunks.append(chunk['answer'])
+            if "answer" in chunk:
+                chunks.append(chunk["answer"])
                 chat_container.markdown("".join(chunks))
                 
         self.add_history("assistant", "".join(chunks))
