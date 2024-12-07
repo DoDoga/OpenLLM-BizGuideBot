@@ -92,8 +92,8 @@ class ChatApp:
     def format_docs(self, docs):
         return "\n\n".join(doc.page_content for doc in docs)
     
-    # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
-    def run(self):
+    @st.cache_resource
+    def rag_load_and_clear(self):
         # run() 재실행되므로 이전 메모리 저장 삭제 
         self.file_processor.clear()
         self.file_processor.add_directory(self.DOCUMENT_DIR)
@@ -112,7 +112,10 @@ class ChatApp:
         else:
             st.session_state["ragActive"] = False
         
-
+    
+    # streamlit은 상호작용이 발생할 때마다 전체 코드가 재실행됨.
+    def run(self):
+        self.rag_load_and_clear()
         self.print_history()
 
         if user_input := st.chat_input("메시지를 입력해 주세요."):
