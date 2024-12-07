@@ -73,16 +73,13 @@ class ChatApp:
 
     def setup_session_state(self):
         if "messages" not in st.session_state:
-            st.session_state["messages"] = []
+            st.session_state["messages"] = [{"role": "assistant","content": "안녕하세요! 저는 엔조이소프트의 AI 안내 챗봇입니다. 무엇을 도와드릴까요?"}]  
 
         if "history" not in st.session_state:
             st.session_state["history"] = {}
         
         if "retriever" not in st.session_state:
-            st.session_state["retriever"] = None
-
-        if "assistant" not in st.session_state:
-            st.session_state["assistant"] = [{"role": "assistant","content": "안녕하세요! 저는 엔조이소프트의 AI 안내 챗봇 엔조이봇입니다. 무엇을 도와드릴까요?"}]                              
+            st.session_state["retriever"] = None                            
 
         
     def setup_page(self):
